@@ -1,5 +1,5 @@
 const express = require("express");
-const { exec } = require("child_process");
+const { exec } = require('child_process');
 
 const app = express();
 app.use(express.json());
@@ -10,7 +10,7 @@ app.post("/webhook", (req, res) => {
   if (branch === "refs/heads/master") {
     console.log("🚀 Received push to master. Pulling latest code...");
 
-    exec("cd /root/blog-backend && git pull origin master && npm install && pm2 restart blog-api", (err, stdout, stderr) => {
+    exec("cd /root/blog-backend/dist && git pull origin master && npm install && npm run build && pm2 restart blog-api", (err, stdout, stderr) => {
       if (err) {
         console.error(`❌ Error updating: ${err.message}`);
         return res.status(500).send("Update failed.");
