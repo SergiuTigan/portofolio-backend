@@ -19,7 +19,7 @@ mongoose
 
 // Test Route
 app.get("/", (req, res) => {
-  res.send("Hello, Blog API is running, boss de boss de boss de boss!");
+  res.send("Hello, Blog API is running, boss de boss de boss de boss de boss!");
 });
 
 // Start Server
