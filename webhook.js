@@ -10,7 +10,7 @@ app.post("/webhook", (req, res) => {
   if (branch === "refs/heads/master") {
     console.log("🚀 Received push to master. Pulling latest code...");
 
-    exec("cd /home/ubuntu/blog-backend && git pull origin master && npm install && pm2 restart blog-api", (err, stdout, stderr) => {
+    exec("cd /home/ubuntu/blog-backend && git pull origin master && npm install && sudo systemctl restart blog-api", (err, stdout, stderr) => {
       if (err) {
         console.error(`❌ Error updating: ${err.message}`);
         return res.status(500).send("Update failed.");
