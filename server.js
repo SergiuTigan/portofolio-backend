@@ -25,10 +25,7 @@ app.get("/", (req, res) => {
 // Routes
 app.post("/api/posts", async (req, res) => {
   const { title, content } = req.body;
-  mongoose.model("Post").create({ title, content }).then((post) => {
-    console.log("Post created:", post);
-    res.send(post);
-  });
+  res.send(`Title: ${title}, Content: ${content}`);
 });
 // Start Server
 const PORT = process.env.PORT || 3000;
