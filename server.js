@@ -22,6 +22,14 @@ app.get("/", (req, res) => {
   res.send("Hello World, boss!");
 });
 
+// Routes
+app.post("/api/posts", async (req, res) => {
+  const { title, content } = req.body;
+  mongoose.model("Post").create({ title, content }).then((post) => {
+    console.log("Post created:", post);
+    res.send(post);
+  });
+});
 // Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
