@@ -14,19 +14,23 @@ export class BlogPostsService {
     return this.blogPostModel.find().exec();
   }
 
-  getPost(id: string): string {
-    return `One post with id: ${id}`;
+  getPost(id: string): Promise<BlogPost> {
+    return this.blogPostModel.findOne({ _id: id }).exec();
   }
 
-  createBlogPost(blogPost: BlogPost): string {
-    return 'Created blog post with title: ' + blogPost.title;
+  createBlogPost(blogPost: BlogPost): Promise<BlogPost> {
+    const newBlogPost = new this.blogPostModel(blogPost);
+    return newBlogPost.save();
   }
 
-  updatePost(id: string, blogPost: UpdateBlogPostDto): string {
-    return 'Updated post with id: ' + id + ' and title: ' + blogPost.title;
+  updatePost(id: string, blogPost: UpdateBlogPostDto): Promise<BlogPost> {
+    return this.blogPostModel
+      .findByIdAndUpdate(id, blogPost, { new: true })
+      .exec();
   }
 
   deletePost(id: string): string {
-    return 'Delete post, id: ' + id;
+    this.blogPostModel.deleteOne({ _id: id }).exec().then();
+    return `Post with id: ${id} was deleted`;
   }
 }

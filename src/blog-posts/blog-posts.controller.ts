@@ -24,12 +24,12 @@ export class BlogPostsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): string {
+  findOne(@Param('id') id: string): Promise<BlogPost> {
     return this.postsService.getPost(id);
   }
 
   @Post()
-  create(@Body() createPostDto: CreateBlogPostDto): string {
+  create(@Body() createPostDto: CreateBlogPostDto): Promise<BlogPost> {
     return this.postsService.createBlogPost(createPostDto);
   }
 
@@ -37,12 +37,12 @@ export class BlogPostsController {
   update(
     @Param('id') id: string,
     @Body() updatePostDto: UpdateBlogPostDto,
-  ): string {
+  ): Promise<BlogPost> {
     return this.postsService.updatePost(id, updatePostDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): void {
-    this.postsService.deletePost(id);
+  remove(@Param('id') id: string): string {
+    return this.postsService.deletePost(id);
   }
 }
