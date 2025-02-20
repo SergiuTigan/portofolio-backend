@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { BlogPost, BlogPostDocument } from './schemas/blog-post.schema';
-import { UpdateBlogPostDto } from './schemas/blog-post.models';
+import {
+  CreateBlogPostDto,
+  UpdateBlogPostDto,
+} from './schemas/blog-post.models';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -18,7 +21,7 @@ export class BlogPostsService {
     return this.blogPostModel.findOne({ _id: id }).exec();
   }
 
-  createBlogPost(blogPost: BlogPost): Promise<BlogPost> {
+  createBlogPost(blogPost: CreateBlogPostDto): Promise<BlogPost> {
     const newBlogPost = new this.blogPostModel(blogPost);
     return newBlogPost.save();
   }
