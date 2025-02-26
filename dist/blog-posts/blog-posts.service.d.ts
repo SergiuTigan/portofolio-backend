@@ -1,5 +1,5 @@
 import { BlogPost, BlogPostDocument } from './schemas/blog-post.schema';
-import { CreateBlogPostDto, UpdateBlogPostDto } from './schemas/blog-post.models';
+import { CreateBlogPostDto, UpdateBlogPostDto } from './schemas/blog-post.model';
 import { Model } from 'mongoose';
 export declare class BlogPostsService {
     private blogPostModel;

@@ -1,5 +1,5 @@
 import { BlogPostsService } from './blog-posts.service';
-import { CreateBlogPostDto, UpdateBlogPostDto } from './schemas/blog-post.models';
+import { CreateBlogPostDto, UpdateBlogPostDto } from './schemas/blog-post.model';
 import { BlogPost } from './schemas/blog-post.schema';
 export declare class BlogPostsController {
     private readonly postsService;
