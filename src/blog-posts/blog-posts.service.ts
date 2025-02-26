@@ -3,7 +3,7 @@ import { BlogPost, BlogPostDocument } from './schemas/blog-post.schema';
 import {
   CreateBlogPostDto,
   UpdateBlogPostDto,
-} from './schemas/blog-post.models';
+} from './schemas/blog-post.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 

@@ -11,7 +11,7 @@ import { BlogPostsService } from './blog-posts.service';
 import {
   CreateBlogPostDto,
   UpdateBlogPostDto,
-} from './schemas/blog-post.models';
+} from './schemas/blog-post.model';
 import { BlogPost } from './schemas/blog-post.schema';
 
 @Controller('blog-posts')
