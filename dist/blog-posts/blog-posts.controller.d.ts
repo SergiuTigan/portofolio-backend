@@ -5,8 +5,8 @@ export declare class BlogPostsController {
     private readonly postsService;
     constructor(postsService: BlogPostsService);
     findAll(): Promise<BlogPost[]>;
-    findOne(id: string): string;
-    create(createPostDto: CreateBlogPostDto): string;
-    update(id: string, updatePostDto: UpdateBlogPostDto): string;
-    remove(id: string): void;
+    findOne(id: string): Promise<BlogPost>;
+    create(createPostDto: CreateBlogPostDto): Promise<BlogPost>;
+    update(id: string, updatePostDto: UpdateBlogPostDto): Promise<BlogPost>;
+    remove(id: string): string;
 }

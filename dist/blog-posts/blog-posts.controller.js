@@ -32,7 +32,7 @@ let BlogPostsController = class BlogPostsController {
         return this.postsService.updatePost(id, updatePostDto);
     }
     remove(id) {
-        this.postsService.deletePost(id);
+        return this.postsService.deletePost(id);
     }
 };
 exports.BlogPostsController = BlogPostsController;
@@ -47,14 +47,14 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", String)
+    __metadata("design:returntype", Promise)
 ], BlogPostsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", String)
+    __metadata("design:returntype", Promise)
 ], BlogPostsController.prototype, "create", null);
 __decorate([
     (0, common_1.Put)(':id'),
@@ -62,14 +62,14 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", String)
+    __metadata("design:returntype", Promise)
 ], BlogPostsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", String)
 ], BlogPostsController.prototype, "remove", null);
 exports.BlogPostsController = BlogPostsController = __decorate([
     (0, common_1.Controller)('blog-posts'),

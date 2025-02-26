@@ -25,16 +25,20 @@ let BlogPostsService = class BlogPostsService {
         return this.blogPostModel.find().exec();
     }
     getPost(id) {
-        return `One post with id: ${id}`;
+        return this.blogPostModel.findOne({ _id: id }).exec();
     }
     createBlogPost(blogPost) {
-        return 'Created blog post with title: ' + blogPost.title;
+        const newBlogPost = new this.blogPostModel(blogPost);
+        return newBlogPost.save();
     }
     updatePost(id, blogPost) {
-        return 'Updated post with id: ' + id + ' and title: ' + blogPost.title;
+        return this.blogPostModel
+            .findByIdAndUpdate(id, blogPost, { new: true })
+            .exec();
     }
     deletePost(id) {
-        return 'Delete post, id: ' + id;
+        this.blogPostModel.deleteOne({ _id: id }).exec().then();
+        return `Post with id: ${id} was deleted`;
     }
 };
 exports.BlogPostsService = BlogPostsService;
