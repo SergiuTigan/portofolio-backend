@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './schemas/user.model';
+import { UserDocument } from './schemas/user.schema';
 
 @Controller('users')
 export class UsersController {
@@ -16,7 +17,13 @@ export class UsersController {
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    this.findAll().then((users: UserDocument[]) => {
+      if (users.find((user) => user.email === createUserDto.email)) {
+        throw new Error('User with this email already exists');
+      } else {
+        return this.usersService.create(createUserDto);
+      }
+    });
   }
 
   @Get()
