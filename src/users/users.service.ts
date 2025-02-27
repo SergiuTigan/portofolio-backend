@@ -10,8 +10,9 @@ export class UsersService {
     @InjectModel(Users.name) private usersModel: Model<UserDocument>,
   ) {}
 
-  create(createUserDto: CreateUserDto): string {
-    const existingUser = this.usersModel.findOne({
+  async create(createUserDto: CreateUserDto): Promise<{ message: string }> {
+    const newUser = new this.usersModel(createUserDto);
+    const existingUser = await this.usersModel.findOne({
       email: createUserDto.email,
     });
 
@@ -23,9 +24,10 @@ export class UsersService {
     }
 
     // Create new user
-    const newUser = new this.usersModel(createUserDto);
-    newUser.save().then();
-    return `User with email: ${createUserDto.email} was created`;
+    await newUser.save();
+    return {
+      message: `User with email ${createUserDto.email} has been created successfully`,
+    };
   }
 
   findAll(): Promise<UserDocument[]> {
