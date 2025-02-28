@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { BlogPostsService } from './blog-posts.service';
 import {
@@ -13,6 +14,7 @@ import {
   UpdateBlogPostDto,
 } from './schemas/blog-post.model';
 import { BlogPost } from './schemas/blog-post.schema';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('blog-posts')
 export class BlogPostsController {
@@ -28,11 +30,13 @@ export class BlogPostsController {
     return this.postsService.getPost(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createPostDto: CreateBlogPostDto): Promise<BlogPost> {
     return this.postsService.createBlogPost(createPostDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -41,6 +45,7 @@ export class BlogPostsController {
     return this.postsService.updatePost(id, updatePostDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string): string {
     return this.postsService.deletePost(id);
