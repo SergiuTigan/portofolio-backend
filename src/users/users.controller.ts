@@ -15,8 +15,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto): string {
+  create(@Body() createUserDto: CreateUserDto): Promise<{ message: string }> {
     return this.usersService.create(createUserDto);
+  }
+
+  @Post('/login/')
+  login(@Body() createUserDto: CreateUserDto): Promise<{ message: string }> {
+    return this.usersService.login(createUserDto);
   }
 
   @Get()

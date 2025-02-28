@@ -30,6 +30,22 @@ export class UsersService {
     };
   }
 
+  async login(createUserDto: CreateUserDto): Promise<CreateUserDto> {
+    const user = await this.usersModel
+      .findOne({ email: createUserDto.email })
+      .exec();
+    if (!user) {
+      throw new HttpException(
+        'User with this email does not exist',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (user.password !== createUserDto.password) {
+      throw new HttpException('Password is incorrect', HttpStatus.UNAUTHORIZED);
+    }
+    return createUserDto;
+  }
+
   findAll(): Promise<UserDocument[]> {
     return this.usersModel.find().exec();
   }
