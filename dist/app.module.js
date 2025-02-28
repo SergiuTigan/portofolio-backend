@@ -13,6 +13,7 @@ const app_service_1 = require("./app.service");
 const blog_posts_module_1 = require("./blog-posts/blog-posts.module");
 const mongoose_1 = require("@nestjs/mongoose");
 const users_module_1 = require("./users/users.module");
+const jwt_1 = require("@nestjs/jwt");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -20,6 +21,10 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/blog_db'),
+            jwt_1.JwtModule.register({
+                secret: 'test123',
+                signOptions: { expiresIn: '24h' },
+            }),
             blog_posts_module_1.BlogPostsModule,
             users_module_1.UsersModule,
         ],
