@@ -60,7 +60,7 @@ export class UsersService {
       .exec();
   }
 
-  remove(id: number) {
+  remove(id: string) {
     this.usersModel.deleteOne({ _id: id }).exec().then();
     return `User with id: ${id} was deleted`;
   }

@@ -20,7 +20,7 @@ export class UsersController {
   }
 
   @Post('/login/')
-  login(@Body() createUserDto: CreateUserDto): Promise<{ message: string }> {
+  login(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
     return this.usersService.login(createUserDto);
   }
 
@@ -41,6 +41,6 @@ export class UsersController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
   }
 }
