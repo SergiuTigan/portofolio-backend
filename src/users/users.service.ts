@@ -50,11 +50,11 @@ export class UsersService {
     return this.usersModel.find().exec();
   }
 
-  findOne(id: number): Promise<UserDocument> {
+  findOne(id: string): Promise<UserDocument> {
     return this.usersModel.findById(id).exec();
   }
 
-  update(id: number, updateUserDto: UpdateUserDto): Promise<UserDocument> {
+  update(id: string, updateUserDto: UpdateUserDto): Promise<UserDocument> {
     return this.usersModel
       .findByIdAndUpdate(id, updateUserDto, { new: true })
       .exec();
