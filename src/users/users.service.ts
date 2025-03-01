@@ -105,7 +105,6 @@ export class UsersService {
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserDocument> {
-    //if we have a newPassword in updateUserDto, hash it and update the user's password, check if the password field is present and if it's the same as the saved one for this user
     if (updateUserDto.newPassword) {
       return this.usersModel
         .findById(id)
@@ -133,6 +132,10 @@ export class UsersService {
             )
             .exec();
         });
+    } else {
+      return this.usersModel
+        .findByIdAndUpdate(id, updateUserDto, { new: true })
+        .exec();
     }
   }
 
