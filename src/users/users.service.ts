@@ -68,7 +68,8 @@ export class UsersService {
     const payload = {
       sub: user._id,
       email: user.email,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       role: user.role,
     };
 
@@ -76,7 +77,8 @@ export class UsersService {
       user: {
         _id: user._id,
         email: user.email,
-        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
         role: user.role,
       },
       token: this.jwtService.sign(payload),
