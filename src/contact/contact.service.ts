@@ -46,14 +46,4 @@ export class ContactService {
       .findByIdAndUpdate(id, { isRead: true }, { new: true })
       .exec();
   }
-
-  // In contact.service.ts
-  async testEmailConnection() {
-    return this.mailerService.sendContactEmail({
-      name: 'Test User',
-      email: 'test@example.com',
-      subject: 'Test Email',
-      message: 'This is a test email to verify the email configuration.',
-    });
-  }
 }

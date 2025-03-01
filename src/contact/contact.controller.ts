@@ -25,19 +25,4 @@ export class ContactController {
   async markAsRead(@Param('id') id: string) {
     return this.contactService.markAsRead(id);
   }
-
-  @Get('test-email')
-  async testEmail() {
-    try {
-      await this.contactService.testEmailConnection();
-      return { success: true, message: 'Email test successful' };
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Email test failed',
-        error: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      };
-    }
-  }
 }
