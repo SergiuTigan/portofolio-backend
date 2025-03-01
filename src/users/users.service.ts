@@ -101,23 +101,39 @@ export class UsersService {
     return this.usersModel.findById(id).exec();
   }
 
-  update(id: string, updateUserDto: UpdateUserDto): Promise<UserDocument> {
-    // If password is being updated, hash it
-    if (updateUserDto.password) {
-      return bcrypt.hash(updateUserDto.password, 10).then((hashedPassword) => {
-        return this.usersModel
-          .findByIdAndUpdate(
-            id,
-            { ...updateUserDto, password: hashedPassword },
-            { new: true },
-          )
-          .exec();
-      });
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserDocument> {
+    //if we have a newPassword in updateUserDto, hash it and update the user's password, check if the password field is present and if it's the same as the saved one for this user
+    if (updateUserDto.newPassword) {
+      return this.usersModel
+        .findById(id)
+        .exec()
+        .then(async (user) => {
+          const isMatch = await bcrypt.compare(
+            updateUserDto.password,
+            user.password,
+          );
+          if (!isMatch) {
+            throw new HttpException(
+              'Password is incorrect',
+              HttpStatus.UNAUTHORIZED,
+            );
+          }
+          const hashedPassword = await bcrypt.hash(
+            updateUserDto.newPassword,
+            10,
+          );
+          return await this.usersModel
+            .findByIdAndUpdate(
+              id,
+              { ...updateUserDto, password: hashedPassword },
+              { new: true },
+            )
+            .exec();
+        });
     }
-
-    return this.usersModel
-      .findByIdAndUpdate(id, updateUserDto, { new: true })
-      .exec();
   }
 
   remove(id: string) {
