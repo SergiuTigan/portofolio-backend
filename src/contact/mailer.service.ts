@@ -16,7 +16,7 @@ export class MailerService {
     subject: string;
     message: string;
   }) {
-    const companyEmail = this.configService.get('COMPANY_EMAIL');
+    const companyEmail = 'sergiu@tigan.dev';
 
     return this.mailerService.sendMail({
       to: companyEmail,
