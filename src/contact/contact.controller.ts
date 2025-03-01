@@ -26,11 +26,10 @@ export class ContactController {
     return this.contactService.markAsRead(id);
   }
 
-  // contact/contact.controller.ts
   @Get('test-email')
   async testEmail() {
     try {
-      await this.testEmailConnection();
+      await this.contactService.testEmailConnection();
       return { success: true, message: 'Email test successful' };
     } catch (error) {
       return {
@@ -40,15 +39,5 @@ export class ContactController {
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       };
     }
-  }
-
-  // In contact.service.ts
-  async testEmailConnection() {
-    return this.mailerService.sendContactEmail({
-      name: 'Test User',
-      email: 'test@example.com',
-      subject: 'Test Email',
-      message: 'This is a test email to verify the email configuration.',
-    });
   }
 }
