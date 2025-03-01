@@ -5,10 +5,25 @@ import { BlogPostsModule } from './blog-posts/blog-posts.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
+  controllers: [AppController],
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/blog_db'),
+    // Load environment variables
+    ConfigModule.forRoot({
+      isGlobal: true, // Make config available throughout the app
+      envFilePath: '.env', // Explicitly set the file path
+    }),
+
+    // Configure MongoDB connection using environment variables
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+    }),
     JwtModule.register({
       secret: 'test123', // Use environment variables in production
       signOptions: { expiresIn: '24h' }, // Token expiration time
@@ -16,7 +31,6 @@ import { JwtModule } from '@nestjs/jwt';
     BlogPostsModule,
     UsersModule,
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
