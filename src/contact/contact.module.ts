@@ -12,6 +12,7 @@ import { AppMailerModule } from './mailer.module';
     AppMailerModule,
   ],
   controllers: [ContactController],
+  exports: [MongooseModule],
   providers: [ContactService],
 })
 export class ContactModule {}
