@@ -20,19 +20,12 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        controllers: [app_controller_1.AppController],
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
             }),
-            mongoose_1.MongooseModule.forRootAsync({
-                imports: [config_1.ConfigModule],
-                inject: [config_1.ConfigService],
-                useFactory: (configService) => ({
-                    uri: configService.get('MONGODB_URI'),
-                }),
-            }),
+            mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/blog_db'),
             jwt_1.JwtModule.register({
                 secret: 'test123',
                 signOptions: { expiresIn: '24h' },
@@ -40,6 +33,7 @@ exports.AppModule = AppModule = __decorate([
             blog_posts_module_1.BlogPostsModule,
             users_module_1.UsersModule,
         ],
+        controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);

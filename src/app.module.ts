@@ -13,7 +13,7 @@ import { ConfigModule } from '@nestjs/config';
       isGlobal: true, // Make config available throughout the app
       envFilePath: '.env', // Explicitly set the file path
     }),
-    MongooseModule.forRoot('mongodb://localhost/blog_db'),
+    MongooseModule.forRoot('mongodb://147.93.55.240:27017/blog_db'),
     JwtModule.register({
       secret: 'test123', // Use environment variables in production
       signOptions: { expiresIn: '24h' }, // Token expiration time
