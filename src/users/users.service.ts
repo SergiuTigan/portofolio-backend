@@ -13,7 +13,9 @@ export class UsersService {
     private jwtService: JwtService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<{ message: string }> {
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<{ user: any; token: string }> {
     const existingUser = await this.usersModel.findOne({
       email: createUserDto.email,
     });
@@ -35,9 +37,7 @@ export class UsersService {
     });
 
     await newUser.save();
-    return {
-      message: `User with email ${createUserDto.email} has been created successfully`,
-    };
+    return this.login(createUserDto);
   }
 
   async login(
