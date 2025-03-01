@@ -1,5 +1,5 @@
 // contact/contact.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Contact } from './schemas/contact.schema';
@@ -14,14 +14,27 @@ export class ContactService {
   ) {}
 
   async create(createContactDto: CreateContactDto): Promise<Contact> {
-    // 1. Save to database
-    const newContact = new this.contactModel(createContactDto);
-    const savedContact = await newContact.save();
+    try {
+      console.log('Saving contact to database...');
+      const newContact = new this.contactModel(createContactDto);
+      const savedContact = await newContact.save();
 
-    // 2. Send email notification
-    await this.mailerService.sendContactEmail(createContactDto);
+      console.log('Contact saved, attempting to send email...');
+      try {
+        await this.mailerService.sendContactEmail(createContactDto);
+        console.log('Email sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send email:', emailError);
+        // Continue with the process even if email fails
+      }
 
-    return savedContact;
+      return savedContact;
+    } catch (error) {
+      console.error('Error in contact creation:', error);
+      throw new InternalServerErrorException(
+        'Failed to process contact request',
+      );
+    }
   }
 
   async findAll(): Promise<Contact[]> {

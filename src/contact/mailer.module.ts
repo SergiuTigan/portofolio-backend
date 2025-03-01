@@ -13,14 +13,18 @@ import { MailerService } from './mailer.service';
         transport: {
           host: configService.get('MAIL_HOST'),
           port: configService.get('MAIL_PORT'),
-          secure: configService.get('MAIL_SECURE') === 'true',
+          secure: configService.get('MAIL_SECURE') === 'true', // true for 465, false for other ports
           auth: {
             user: configService.get('MAIL_USER'),
             pass: configService.get('MAIL_PASSWORD'),
           },
+          tls: {
+            // Do not fail on invalid certs
+            rejectUnauthorized: false,
+          },
         },
         defaults: {
-          from: configService.get('MAIL_FROM'),
+          from: `"Contact Form" <${configService.get('MAIL_FROM')}>`,
         },
       }),
     }),
