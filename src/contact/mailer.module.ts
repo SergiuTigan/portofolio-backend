@@ -1,26 +1,32 @@
 // mailer/mailer.module.ts
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerService } from './mailer.service';
 
 @Module({
   imports: [
-    MailerModule.forRoot({
-      transport: {
-        host: 'mail.privateemail.com',
-        port: 465,
-        secure: true,
-        auth: {
-          user: 'sergiu@tigan.dev',
-          pass: 'marian93A@', // Replace with your real password
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('MAIL_HOST'),
+          port: configService.get('MAIL_PORT'),
+          secure: configService.get('MAIL_SECURE') === 'true', // true for 465, false for other ports
+          auth: {
+            user: configService.get('MAIL_USER'),
+            pass: configService.get('MAIL_PASSWORD'),
+          },
+          tls: {
+            // Do not fail on invalid certs
+            rejectUnauthorized: false,
+          },
         },
-        tls: {
-          rejectUnauthorized: false,
+        defaults: {
+          from: `"Contact Form" <${configService.get('MAIL_FROM')}>`,
         },
-      },
-      defaults: {
-        from: `"Contact Form" <sergiu@tigan.dev>`,
-      },
+      }),
     }),
   ],
   providers: [MailerService],

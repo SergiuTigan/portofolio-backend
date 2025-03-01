@@ -13,7 +13,7 @@ import { ContactModule } from './contact/contact.module';
     MongooseModule.forRoot('mongodb://localhost:27017/blog_db'),
     ConfigModule.forRoot({
       isGlobal: true, // Make config available throughout the app
-      envFilePath: '.env', // Explicitly set the file path
+      envFilePath: './.env', // Explicitly set the file path
     }),
     JwtModule.register({
       secret: 'test123', // Use environment variables in production
