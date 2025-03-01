@@ -14,13 +14,25 @@ const blog_posts_module_1 = require("./blog-posts/blog-posts.module");
 const mongoose_1 = require("@nestjs/mongoose");
 const users_module_1 = require("./users/users.module");
 const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
+        controllers: [app_controller_1.AppController],
         imports: [
-            mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/blog_db'),
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: '.env',
+            }),
+            mongoose_1.MongooseModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                inject: [config_1.ConfigService],
+                useFactory: (configService) => ({
+                    uri: configService.get('MONGODB_URI'),
+                }),
+            }),
             jwt_1.JwtModule.register({
                 secret: 'test123',
                 signOptions: { expiresIn: '24h' },
@@ -28,7 +40,6 @@ exports.AppModule = AppModule = __decorate([
             blog_posts_module_1.BlogPostsModule,
             users_module_1.UsersModule,
         ],
-        controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
 ], AppModule);
