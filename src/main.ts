@@ -1,15 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as fs from 'node:fs';
 
 async function bootstrap() {
-  const httpsOptions = {
-    key: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/fullchain.pem'),
-  };
+  // const httpsOptions = {
+  //   key: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/privkey.pem'),
+  //   cert: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/fullchain.pem'),
+  // };
 
   const app = await NestFactory.create(AppModule, {
-    httpsOptions,
+    // httpsOptions,
   });
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
