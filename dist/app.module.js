@@ -25,7 +25,7 @@ exports.AppModule = AppModule = __decorate([
             mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/blog_db'),
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                envFilePath: '.env',
+                envFilePath: './.env',
             }),
             jwt_1.JwtModule.register({
                 secret: 'test123',
