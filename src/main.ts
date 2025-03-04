@@ -5,7 +5,7 @@ import * as fs from 'node:fs';
 async function bootstrap() {
   const httpsOptions = {
     key: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/fullchain.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/cert.pem'),
   };
 
   const app = await NestFactory.create(AppModule, {
