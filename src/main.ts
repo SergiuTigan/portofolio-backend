@@ -12,7 +12,12 @@ async function bootstrap() {
     httpsOptions,
   });
   app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://next.tigan.dev');
+    const allowedOrigins = ['https://next.tigan.dev', 'http://localhost:4200'];
+    const origin = req.headers.origin;
+
+    if (allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
     res.header(
       'Access-Control-Allow-Methods',
       'GET, POST, PUT, DELETE, OPTIONS, PATCH',
