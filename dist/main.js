@@ -5,14 +5,18 @@ const app_module_1 = require("./app.module");
 const fs = require("node:fs");
 async function bootstrap() {
     const httpsOptions = {
-        key: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/privkey.pem'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/tigan.dev/fullchain.pem'),
+        key: fs.readFileSync('/etc/letsencrypt/live/api.tigan.dev/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/api.tigan.dev/cert.pem'),
     };
     const app = await core_1.NestFactory.create(app_module_1.AppModule, {
         httpsOptions,
     });
     app.use((req, res, next) => {
-        res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
+        const allowedOrigins = ['https://next.tigan.dev', 'http://localhost:4200'];
+        const origin = req.headers.origin;
+        if (allowedOrigins.includes(origin)) {
+            res.header('Access-Control-Allow-Origin', origin);
+        }
         res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         res.header('Access-Control-Allow-Credentials', 'true');

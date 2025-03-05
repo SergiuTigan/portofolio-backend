@@ -6,13 +6,18 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './schemas/user.model';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminAuthGuard } from '../auth/admin-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { put } from '@vercel/blob';
 
 @Controller('users')
 export class UsersController {
@@ -58,8 +63,25 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    // req.user comes from the JwtAuthGuard
+  getProfile(@Request() req: any) {
     return req.user;
+  }
+
+  @Post(':id/avatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  async uploadAvatar(
+    @UploadedFile() file: any,
+    @Req() request: { id: string },
+  ) {
+    // Get current user ID from request
+    const userId = request.id;
+
+    // Upload to Vercel Blob
+    const blob = await put(`avatars/${userId}/profilePic.jpg`, file.buffer, {
+      access: 'public',
+    });
+
+    // Return the URL
+    return { url: blob.url };
   }
 }
