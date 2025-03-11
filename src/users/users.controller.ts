@@ -75,7 +75,7 @@ export class UsersController {
   )
   async uploadAvatar(@UploadedFile() file: any, @Param('id') userId: string) {
     const blob: PutBlobResult = await put(
-      `avatars/${userId}/profilePic.png`,
+      `Users/${userId}/avatar.png`,
       file.buffer,
       {
         token: environment.BLOB_READ_WRITE_TOKEN,
