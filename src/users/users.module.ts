@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from './schemas/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       }),
       inject: [ConfigService],
     }),
+    MulterModule.register(),
   ],
   controllers: [UsersController],
   providers: [UsersService],

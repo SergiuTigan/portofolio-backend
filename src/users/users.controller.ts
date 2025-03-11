@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Req,
   Request,
   UploadedFile,
   UseGuards,
@@ -17,7 +16,7 @@ import { CreateUserDto, UpdateUserDto } from './schemas/user.model';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminAuthGuard } from '../auth/admin-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { put } from '@vercel/blob';
+import { put, PutBlobResult } from '@vercel/blob';
 import { environment } from '../../.env.local';
 
 @Controller('users')
@@ -69,22 +68,22 @@ export class UsersController {
   }
 
   @Post(':id/avatar')
-  @UseInterceptors(FileInterceptor('avatar'))
-  async uploadAvatar(
-    @UploadedFile() file: any,
-    @Req() request: { id: string },
-  ) {
-    // Get current user ID from request
-    const userId = request.id;
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: undefined,
+    }),
+  )
+  async uploadAvatar(@UploadedFile() file: any, @Param('id') userId: string) {
+    const blob: PutBlobResult = await put(
+      `avatars/${userId}/profilePic.png`,
+      file.buffer,
+      {
+        token: environment.BLOB_READ_WRITE_TOKEN,
+        contentType: file.mimetype,
+        access: 'public',
+      },
+    );
 
-    // Upload to Vercel Blob
-    const blob = await put(`avatars/${userId}/profilePic.jpg`, file.buffer, {
-      token: environment.BLOB_READ_WRITE_TOKEN,
-      contentType: file.type,
-      access: 'public',
-    });
-
-    // Return the URL
     return { url: blob.url };
   }
 }
