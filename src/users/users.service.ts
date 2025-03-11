@@ -46,7 +46,6 @@ export class UsersService {
     const user = await this.usersModel
       .findOne({ email: createUserDto.email })
       .exec();
-
     if (!user) {
       throw new HttpException(
         'User with this email does not exist',
@@ -77,20 +76,13 @@ export class UsersService {
       user: {
         _id: user._id,
         email: user.email,
+        avatar: user.avatar,
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
       },
       token: this.jwtService.sign(payload),
     };
-  }
-
-  async validateToken(token: string): Promise<any> {
-    try {
-      return this.jwtService.verify(token);
-    } catch (error) {
-      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
-    }
   }
 
   findAll(): Promise<UserDocument[]> {

@@ -84,6 +84,8 @@ export class UsersController {
       },
     );
 
+    this.usersService.update(userId, { avatar: blob.url }).then();
+
     return { url: blob.url };
   }
 }
