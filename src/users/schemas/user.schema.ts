@@ -7,6 +7,7 @@ export type UserDocument = HydratedDocument<Users>;
 export class Users {
   @Prop({ required: true })
   firstName: string;
+
   @Prop({ required: true })
   lastName: string;
 
@@ -18,6 +19,12 @@ export class Users {
 
   @Prop({ default: 'user' })
   role: string;
+
+  @Prop()
+  avatar?: string;
+
+  @Prop()
+  bio?: string;
 
   @Prop({ default: Date.now })
   createdAt: number;

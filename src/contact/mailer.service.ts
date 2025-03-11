@@ -1,14 +1,10 @@
 // mailer/mailer.service.ts
 import { Injectable } from '@nestjs/common';
 import { MailerService as NestMailerService } from '@nestjs-modules/mailer';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MailerService {
-  constructor(
-    private readonly mailerService: NestMailerService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly mailerService: NestMailerService) {}
 
   async sendContactEmail(contactData: {
     name: string;

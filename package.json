@@ -32,7 +32,7 @@
   "devDependencies": {
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/cli": "^10.0.0",
-    "@nestjs/config": "^4.0.0",
+    "@nestjs/config": "^4.0.1",
     "@nestjs/mongoose": "^11.0.1",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",

@@ -2,17 +2,18 @@
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerService } from './mailer.service';
+import { environment } from '../../.env.local';
 
 @Module({
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'mail.privateemail.com',
-        port: 465,
-        secure: true,
+        host: environment.MAIL_HOST,
+        port: environment.MAIL_PORT,
+        secure: environment.MAIL_SECURE === 'true',
         auth: {
-          user: 'sergiu@tigan.dev',
-          pass: 'marian93A@', // Replace with your real password
+          user: environment.MAIL_USER,
+          pass: environment.MAIL_PASSWORD,
         },
         tls: {
           rejectUnauthorized: false,

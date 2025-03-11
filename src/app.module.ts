@@ -5,16 +5,11 @@ import { BlogPostsModule } from './blog-posts/blog-posts.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
 import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/blog_db'),
-    ConfigModule.forRoot({
-      isGlobal: true, // Make config available throughout the app
-      envFilePath: './.env', // Explicitly set the file path
-    }),
     JwtModule.register({
       secret: 'test123', // Use environment variables in production
       signOptions: { expiresIn: '24h' }, // Token expiration time
