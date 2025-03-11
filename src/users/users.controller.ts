@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminAuthGuard } from '../auth/admin-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { put } from '@vercel/blob';
+import { environment } from '../../.env.local';
 
 @Controller('users')
 export class UsersController {
@@ -78,6 +79,8 @@ export class UsersController {
 
     // Upload to Vercel Blob
     const blob = await put(`avatars/${userId}/profilePic.jpg`, file.buffer, {
+      token: environment.BLOB_READ_WRITE_TOKEN,
+      contentType: file.type,
       access: 'public',
     });
 
