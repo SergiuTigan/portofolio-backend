@@ -1,5 +1,6 @@
+// src/blog-posts/schemas/blog-post.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { Users } from '../../users/schemas/user.schema';
 
 export type BlogPostDocument = HydratedDocument<BlogPost>;
@@ -53,8 +54,30 @@ export class BlogPost {
   @Prop({ required: true })
   thumbnail: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
-  author: Users;
+  // Store both the reference ID and the author details
+  @Prop({ type: Types.ObjectId, ref: 'Users', required: true })
+  authorId: string;
+
+  // Store author details as an embedded document
+  @Prop({
+    type: {
+      _id: { type: Types.ObjectId, required: true },
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+      email: { type: String, required: true },
+      avatar: { type: String },
+      role: { type: String },
+    },
+    required: true,
+  })
+  author: {
+    _id: MongooseSchema.Types.ObjectId;
+    firstName: string;
+    lastName: string;
+    email: string;
+    avatar?: string;
+    role?: string;
+  };
 }
 
 export const BlogPostSchema = SchemaFactory.createForClass(BlogPost);

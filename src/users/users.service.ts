@@ -93,11 +93,11 @@ export class UsersService {
     return this.usersModel.find().exec();
   }
 
-  async findOne(email: string): Promise<UserDocument> {
-    const user = await this.usersModel.findOne({ email: email }).exec();
+  async findOne(id: string): Promise<UserDocument> {
+    const user = await this.usersModel.findById(id).exec();
 
     if (!user) {
-      throw new NotFoundException(`User with email "${email}" not found`);
+      throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
     return user;

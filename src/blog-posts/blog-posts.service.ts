@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BlogPost, BlogPostDocument } from './schemas/blog-post.schema';
-import {
-  CreateBlogPostDto,
-  UpdateBlogPostDto,
-} from './schemas/blog-post.model';
+import { UpdateBlogPostDto } from './schemas/blog-post.model';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { put } from '@vercel/blob';
 import { extname } from 'path';
 import { environment } from '../../.env.local';
@@ -25,7 +22,30 @@ export class BlogPostsService {
   }
 
   async createBlogPost(
-    blogPost: CreateBlogPostDto,
+    blogPost: {
+      authorEmail?: string;
+      images: any[];
+      thumbnail: string;
+      comments: string[];
+      author: {
+        firstName: string;
+        lastName: string;
+        role: string;
+        _id: Types.ObjectId;
+        avatar: string;
+        email: string;
+      };
+      description: string;
+      title: string;
+      imageDescriptions?: { [p: string]: string };
+      authorId: Types.ObjectId;
+      content: string;
+      tags: string[];
+      coverImage: string;
+      category: string;
+      createDate: string;
+      likes: number;
+    },
     files: {
       coverImage: Express.Multer.File[];
       thumbnail: Express.Multer.File[];
@@ -98,6 +118,8 @@ export class BlogPostsService {
         }),
       );
     }
+
+    fileUrls.author = blogPost.author;
 
     return this.updatePost(articleId, fileUrls);
   }

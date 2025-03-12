@@ -60,11 +60,23 @@ export class BlogPostsController {
       images: Express.Multer.File[];
     },
   ): Promise<BlogPost> {
-    const author = await this.usersService.findOne(createPostDto.authorEmail);
+    const authorUser = await this.usersService.findOne(createPostDto.authorId);
+
+    // Create an author object with only the fields we need
+    const author = {
+      _id: authorUser._id,
+      firstName: authorUser.firstName,
+      lastName: authorUser.lastName,
+      email: authorUser.email,
+      avatar: authorUser.avatar,
+      role: authorUser.role,
+    };
+
     return this.postsService.createBlogPost(
       {
         ...createPostDto,
-        author: author,
+        authorId: authorUser._id, // Store the reference ID
+        author: author, // Store the author details directly
         coverImage: 'x',
         thumbnail: 'x',
         images: [],
