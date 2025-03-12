@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './schemas/user.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -63,7 +68,6 @@ export class UsersService {
       throw new HttpException('Password is incorrect', HttpStatus.UNAUTHORIZED);
     }
 
-    // Generate JWT token with user information
     const payload = {
       sub: user._id,
       email: user.email,
@@ -89,8 +93,14 @@ export class UsersService {
     return this.usersModel.find().exec();
   }
 
-  findOne(id: string): Promise<UserDocument> {
-    return this.usersModel.findById(id).exec();
+  async findOne(email: string): Promise<UserDocument> {
+    const user = await this.usersModel.findOne({ email: email }).exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with email "${email}" not found`);
+    }
+
+    return user;
   }
 
   async update(

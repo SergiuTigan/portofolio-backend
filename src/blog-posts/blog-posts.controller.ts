@@ -60,10 +60,11 @@ export class BlogPostsController {
       images: Express.Multer.File[];
     },
   ): Promise<BlogPost> {
+    const author = await this.usersService.findOne(createPostDto.authorEmail);
     return this.postsService.createBlogPost(
       {
         ...createPostDto,
-        author: await this.usersService.findOne(createPostDto.authorId),
+        author: author,
         coverImage: 'x',
         thumbnail: 'x',
         images: [],

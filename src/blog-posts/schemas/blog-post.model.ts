@@ -16,7 +16,7 @@ export interface CreateBlogPostDto {
   comments: string[];
   thumbnail: string;
   author?: Users;
-  authorId?: string;
+  authorEmail?: string;
 }
 
 export interface UpdateBlogPostDto {
