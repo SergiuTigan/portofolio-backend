@@ -6,8 +6,6 @@ export type BlogPostDocument = HydratedDocument<BlogPost>;
 
 @Schema({ timestamps: true })
 export class BlogPost {
-  @Prop()
-  _id: string;
   @Prop({ required: true })
   title: string;
 
@@ -26,8 +24,19 @@ export class BlogPost {
   @Prop({ required: true })
   coverImage: string;
 
-  @Prop({ type: [String], default: [] })
-  images: string[];
+  @Prop({
+    type: [
+      {
+        url: { type: String, required: true },
+        description: { type: String, default: '' },
+      },
+    ],
+    default: [],
+  })
+  images: Array<{
+    url: string;
+    description: string;
+  }>;
 
   @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
   imageDescriptions: Record<string, string>;

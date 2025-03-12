@@ -6,6 +6,9 @@ import {
 } from './schemas/blog-post.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { put } from '@vercel/blob';
+import { extname } from 'path';
+import { environment } from '../../.env.local';
 
 @Injectable()
 export class BlogPostsService {
@@ -21,9 +24,82 @@ export class BlogPostsService {
     return this.blogPostModel.findOne({ _id: id }).exec();
   }
 
-  createBlogPost(blogPost: CreateBlogPostDto): Promise<BlogPost> {
+  async createBlogPost(
+    blogPost: CreateBlogPostDto,
+    files: {
+      coverImage: Express.Multer.File[];
+      thumbnail: Express.Multer.File[];
+      images: Express.Multer.File[];
+    },
+  ): Promise<BlogPost> {
     const newBlogPost = new this.blogPostModel(blogPost);
-    return newBlogPost.save();
+    newBlogPost.save().then();
+    const articleId = String(newBlogPost._id);
+    const fileUrls: any = {};
+
+    // Upload cover image if exists
+    if (files.coverImage?.[0]) {
+      const coverFile = files.coverImage[0];
+      const coverBlob = await put(
+        `Articles/${newBlogPost._id}/cover-image${extname(coverFile.originalname)}`,
+        coverFile.buffer,
+        {
+          token: environment.BLOB_READ_WRITE_TOKEN,
+          contentType: coverFile.mimetype,
+          access: 'public',
+        },
+      );
+      fileUrls.coverImage = coverBlob.url;
+    }
+
+    // Upload thumbnail if exists
+    if (files.thumbnail?.[0]) {
+      const thumbnailFile = files.thumbnail[0];
+      const thumbnailBlob = await put(
+        `Articles/${articleId}/thumbnail${extname(thumbnailFile.originalname)}`,
+        thumbnailFile.buffer,
+        {
+          token: environment.BLOB_READ_WRITE_TOKEN,
+          contentType: thumbnailFile.mimetype,
+          access: 'public',
+        },
+      );
+      fileUrls.thumbnail = thumbnailBlob.url;
+    }
+
+    // Upload additional images if exist
+    if (files.images?.length) {
+      // Parse image metadata if sent as JSON string
+      let imageMetadata = [];
+      if (blogPost.images) {
+        try {
+          imageMetadata = blogPost.images;
+        } catch (e) {
+          console.error('Failed to parse image metadata');
+        }
+      }
+
+      fileUrls.images = await Promise.all(
+        files.images.map(async (file, index) => {
+          const blob = await put(
+            `Articles/${articleId}/images/${index}${extname(file.originalname)}`,
+            file.buffer,
+            {
+              token: environment.BLOB_READ_WRITE_TOKEN,
+              contentType: file.mimetype,
+              access: 'public',
+            },
+          );
+
+          return {
+            url: blob.url,
+            description: imageMetadata[index]?.description || '',
+          };
+        }),
+      );
+    }
+
+    return this.updatePost(articleId, fileUrls);
   }
 
   updatePost(id: string, blogPost: UpdateBlogPostDto): Promise<BlogPost> {
