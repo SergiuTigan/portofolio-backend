@@ -5,9 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BlogPost, BlogPostSchema } from './schemas/blog-post.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
+    UsersModule,
     MongooseModule.forFeature([
       { name: BlogPost.name, schema: BlogPostSchema },
     ]),

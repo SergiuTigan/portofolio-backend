@@ -20,6 +20,7 @@ import { MulterModule } from '@nestjs/platform-express';
     }),
     MulterModule.register(),
   ],
+  exports: [UsersService],
   controllers: [UsersController],
   providers: [UsersService],
 })

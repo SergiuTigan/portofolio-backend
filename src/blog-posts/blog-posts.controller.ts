@@ -18,10 +18,14 @@ import {
 import { BlogPost } from './schemas/blog-post.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UsersService } from '../users/users.service';
 
 @Controller('blog-posts')
 export class BlogPostsController {
-  constructor(private readonly postsService: BlogPostsService) {}
+  constructor(
+    private readonly postsService: BlogPostsService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get()
   async findAll(): Promise<BlogPost[]> {
@@ -43,7 +47,7 @@ export class BlogPostsController {
         { name: 'images', maxCount: 10 },
       ],
       {
-        storage: undefined, // No disk storage, use memory storage for Blob
+        storage: undefined,
       },
     ),
   )
@@ -59,6 +63,7 @@ export class BlogPostsController {
     return this.postsService.createBlogPost(
       {
         ...createPostDto,
+        author: await this.usersService.findOne(createPostDto.authorId),
         coverImage: 'x',
         thumbnail: 'x',
         images: [],

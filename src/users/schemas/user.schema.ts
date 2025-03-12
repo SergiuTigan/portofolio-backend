@@ -17,7 +17,7 @@ export class Users {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ default: 'user' })
+  @Prop({ default: 'Reader' })
   role: string;
 
   @Prop()
