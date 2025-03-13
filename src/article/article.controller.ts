@@ -72,6 +72,9 @@ export class ArticleController {
         ...createPostDto,
         authorId: authorUser._id, // Store the reference ID
         author: author, // Store the author details directly
+        coverImage: 'x',
+        thumbnail: 'x',
+        images: [],
       },
       files,
     );
