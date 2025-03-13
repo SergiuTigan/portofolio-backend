@@ -4,13 +4,14 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
-import { CreateArticleDto } from './schemas/article.model';
+import { CreateArticleDto, UpdateArticleDto } from './schemas/article.model';
 import { Article } from './schemas/article.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -67,7 +68,7 @@ export class ArticleController {
       role: authorUser.role,
     };
 
-    return this.articleService.createOrUpdateArticle(
+    return this.articleService.createArticle(
       {
         ...createPostDto,
         authorId: authorUser._id, // Store the reference ID
@@ -78,6 +79,33 @@ export class ArticleController {
       },
       files,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'coverImage', maxCount: 1 },
+        { name: 'thumbnail', maxCount: 1 },
+        { name: 'images', maxCount: 10 },
+      ],
+      {
+        storage: undefined,
+      },
+    ),
+  )
+  async update(
+    @Param('id') id: string,
+    @Body() updateArticleDto: UpdateArticleDto,
+    @UploadedFiles()
+    files: {
+      coverImage?: Express.Multer.File[];
+      thumbnail?: Express.Multer.File[];
+      images?: Express.Multer.File[];
+    },
+  ): Promise<Article> {
+    return this.articleService.editArticle(id, updateArticleDto, files);
   }
 
   @UseGuards(JwtAuthGuard)

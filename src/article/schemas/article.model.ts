@@ -26,6 +26,7 @@ export interface CreateArticleDto {
 }
 
 export interface UpdateArticleDto {
+  imageMetadata: string[];
   title?: string;
   content?: string;
   description?: string;
