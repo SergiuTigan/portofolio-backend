@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { BlogPost, BlogPostDocument } from './schemas/blog-post.schema';
-import { UpdateBlogPostDto } from './schemas/blog-post.model';
+import { Article, ArticleDocument } from './schemas/article.schema';
+import { UpdateArticleDto } from './schemas/article.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { put } from '@vercel/blob';
@@ -8,21 +8,21 @@ import { extname } from 'path';
 import { environment } from '../../.env.local';
 
 @Injectable()
-export class BlogPostsService {
+export class ArticleService {
   constructor(
-    @InjectModel(BlogPost.name) private blogPostModel: Model<BlogPostDocument>,
+    @InjectModel(Article.name) private articleModel: Model<ArticleDocument>,
   ) {}
 
-  getPosts(): Promise<BlogPost[]> {
-    return this.blogPostModel.find().exec();
+  getArticles(): Promise<Article[]> {
+    return this.articleModel.find().exec();
   }
 
-  getPost(id: string): Promise<BlogPost> {
-    return this.blogPostModel.findOne({ _id: id }).exec();
+  getArticle(id: string): Promise<Article> {
+    return this.articleModel.findOne({ _id: id }).exec();
   }
 
-  async createBlogPost(
-    blogPost: {
+  async createOrUpdateArticle(
+    article: {
       authorEmail?: string;
       images: any[];
       thumbnail: string;
@@ -51,17 +51,22 @@ export class BlogPostsService {
       thumbnail: Express.Multer.File[];
       images: Express.Multer.File[];
     },
-  ): Promise<BlogPost> {
-    const newBlogPost = new this.blogPostModel(blogPost);
-    newBlogPost.save().then();
-    const articleId = String(newBlogPost._id);
+  ): Promise<Article> {
+    let newArticle = await this.articleModel
+      .findOne({ title: article.title })
+      .exec();
+    if (!newArticle) {
+      newArticle = new this.articleModel(article);
+      newArticle.save().then();
+    }
+    const articleId = String(newArticle._id);
     const fileUrls: any = {};
 
     // Upload cover image if exists
     if (files.coverImage?.[0]) {
       const coverFile = files.coverImage[0];
       const coverBlob = await put(
-        `Articles/${newBlogPost._id}/cover-image${extname(coverFile.originalname)}`,
+        `Articles/${newArticle._id}/cover-image${extname(coverFile.originalname)}`,
         coverFile.buffer,
         {
           token: environment.BLOB_READ_WRITE_TOKEN,
@@ -91,9 +96,9 @@ export class BlogPostsService {
     if (files.images?.length) {
       // Parse image metadata if sent as JSON string
       let imageMetadata = [];
-      if (blogPost.images) {
+      if (article.images) {
         try {
-          imageMetadata = blogPost.images;
+          imageMetadata = article.images;
         } catch (e) {
           console.error('Failed to parse image metadata');
         }
@@ -119,19 +124,19 @@ export class BlogPostsService {
       );
     }
 
-    fileUrls.author = blogPost.author;
+    fileUrls.author = article.author;
 
-    return this.updatePost(articleId, fileUrls);
+    return this.updateArticle(articleId, fileUrls);
   }
 
-  updatePost(id: string, blogPost: UpdateBlogPostDto): Promise<BlogPost> {
-    return this.blogPostModel
-      .findByIdAndUpdate(id, blogPost, { new: true })
+  updateArticle(id: string, article: UpdateArticleDto): Promise<Article> {
+    return this.articleModel
+      .findByIdAndUpdate(id, article, { new: true })
       .exec();
   }
 
-  deletePost(id: string): string {
-    this.blogPostModel.deleteOne({ _id: id }).exec().then();
+  deleteArticle(id: string): string {
+    this.articleModel.deleteOne({ _id: id }).exec().then();
     return `Post with id: ${id} was deleted`;
   }
 }

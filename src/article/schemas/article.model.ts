@@ -1,7 +1,7 @@
-// src/blog-posts/schemas/blog-post.model.ts
+// src/article/schemas/article.model.ts
 import { Schema as MongooseSchema } from 'mongoose';
 
-export interface CreateBlogPostDto {
+export interface CreateArticleDto {
   title: string;
   content: string;
   description: string;
@@ -25,7 +25,7 @@ export interface CreateBlogPostDto {
   };
 }
 
-export interface UpdateBlogPostDto {
+export interface UpdateArticleDto {
   title?: string;
   content?: string;
   description?: string;

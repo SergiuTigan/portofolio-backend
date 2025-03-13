@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { BlogPostsService } from './blog-posts.service';
-import { BlogPostsController } from './blog-posts.controller';
+import { ArticleService } from './article.service';
+import { ArticleController } from './article.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BlogPost, BlogPostSchema } from './schemas/blog-post.schema';
+import { Article, ArticleSchema } from './schemas/article.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from '../users/users.module';
@@ -10,9 +10,7 @@ import { UsersModule } from '../users/users.module';
 @Module({
   imports: [
     UsersModule,
-    MongooseModule.forFeature([
-      { name: BlogPost.name, schema: BlogPostSchema },
-    ]),
+    MongooseModule.forFeature([{ name: Article.name, schema: ArticleSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -22,8 +20,8 @@ import { UsersModule } from '../users/users.module';
       inject: [ConfigService],
     }),
   ],
-  controllers: [BlogPostsController],
+  controllers: [ArticleController],
   exports: [MongooseModule],
-  providers: [BlogPostsService],
+  providers: [ArticleService],
 })
-export class BlogPostsModule {}
+export class ArticleModule {}

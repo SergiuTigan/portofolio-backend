@@ -5,36 +5,32 @@ import {
   Get,
   Param,
   Post,
-  Put,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { BlogPostsService } from './blog-posts.service';
-import {
-  CreateBlogPostDto,
-  UpdateBlogPostDto,
-} from './schemas/blog-post.model';
-import { BlogPost } from './schemas/blog-post.schema';
+import { ArticleService } from './article.service';
+import { CreateArticleDto } from './schemas/article.model';
+import { Article } from './schemas/article.schema';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UsersService } from '../users/users.service';
 
-@Controller('blog-posts')
-export class BlogPostsController {
+@Controller('article')
+export class ArticleController {
   constructor(
-    private readonly postsService: BlogPostsService,
+    private readonly articleService: ArticleService,
     private readonly usersService: UsersService,
   ) {}
 
   @Get()
-  async findAll(): Promise<BlogPost[]> {
-    return this.postsService.getPosts();
+  async findAll(): Promise<Article[]> {
+    return this.articleService.getArticles();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<BlogPost> {
-    return this.postsService.getPost(id);
+  findOne(@Param('id') id: string): Promise<Article> {
+    return this.articleService.getArticle(id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -52,17 +48,16 @@ export class BlogPostsController {
     ),
   )
   async create(
-    @Body() createPostDto: CreateBlogPostDto,
+    @Body() createPostDto: CreateArticleDto,
     @UploadedFiles()
     files: {
       coverImage: Express.Multer.File[];
       thumbnail: Express.Multer.File[];
       images: Express.Multer.File[];
     },
-  ): Promise<BlogPost> {
+  ): Promise<Article> {
     const authorUser = await this.usersService.findOne(createPostDto.authorId);
 
-    // Create an author object with only the fields we need
     const author = {
       _id: authorUser._id,
       firstName: authorUser.firstName,
@@ -72,31 +67,19 @@ export class BlogPostsController {
       role: authorUser.role,
     };
 
-    return this.postsService.createBlogPost(
+    return this.articleService.createOrUpdateArticle(
       {
         ...createPostDto,
         authorId: authorUser._id, // Store the reference ID
         author: author, // Store the author details directly
-        coverImage: 'x',
-        thumbnail: 'x',
-        images: [],
       },
       files,
     );
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePostDto: UpdateBlogPostDto,
-  ): Promise<BlogPost> {
-    return this.postsService.updatePost(id, updatePostDto);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string): string {
-    return this.postsService.deletePost(id);
+    return this.articleService.deleteArticle(id);
   }
 }

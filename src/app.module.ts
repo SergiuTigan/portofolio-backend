@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BlogPostsModule } from './blog-posts/blog-posts.module';
+import { ArticleModule } from './article/article.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,7 +14,7 @@ import { ContactModule } from './contact/contact.module';
       secret: 'test123', // Use environment variables in production
       signOptions: { expiresIn: '24h' }, // Token expiration time
     }),
-    BlogPostsModule,
+    ArticleModule,
     UsersModule,
     ContactModule,
   ],

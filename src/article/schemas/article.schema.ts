@@ -1,12 +1,12 @@
-// src/blog-posts/schemas/blog-post.schema.ts
+// src/article/schemas/blog-post.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { Users } from '../../users/schemas/user.schema';
 
-export type BlogPostDocument = HydratedDocument<BlogPost>;
+export type ArticleDocument = HydratedDocument<Article>;
 
 @Schema({ timestamps: true })
-export class BlogPost {
+export class Article {
   @Prop({ required: true })
   title: string;
 
@@ -80,4 +80,4 @@ export class BlogPost {
   };
 }
 
-export const BlogPostSchema = SchemaFactory.createForClass(BlogPost);
+export const ArticleSchema = SchemaFactory.createForClass(Article);
