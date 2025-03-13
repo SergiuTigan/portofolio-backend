@@ -3,7 +3,7 @@ import { Article, ArticleDocument } from './schemas/article.schema';
 import { UpdateArticleDto } from './schemas/article.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { put } from '@vercel/blob';
+import { del, put } from '@vercel/blob';
 import { extname } from 'path';
 import { environment } from '../../.env.local';
 
@@ -85,8 +85,6 @@ export class ArticleService {
         );
         fileUrls.thumbnail = thumbnailBlob.url;
       }
-
-      // Upload additional images if exist
       if (files.images?.length) {
         // Parse image metadata
         let imageMetadata = [];
@@ -98,7 +96,7 @@ export class ArticleService {
           }
         }
 
-        const uploadedImages = await Promise.all(
+        fileUrls.images = await Promise.all(
           files.images.map(async (file, index) => {
             const blob = await put(
               `Articles/temp-${Date.now()}/images/${index}${extname(file.originalname)}`,
@@ -116,8 +114,6 @@ export class ArticleService {
             };
           }),
         );
-
-        fileUrls.images = uploadedImages;
       }
 
       // Prepare complete article data with file URLs
@@ -146,7 +142,7 @@ export class ArticleService {
     },
   ): Promise<Article> {
     // Check if article exists
-    const existingArticle = await this.articleModel.findById(id);
+    const existingArticle: Article = await this.articleModel.findById(id);
     if (!existingArticle) {
       throw new NotFoundException(`Article with ID ${id} not found`);
     }
@@ -154,13 +150,17 @@ export class ArticleService {
     // Prepare update data
     const updateData = { ...article };
     const fileUrls: any = {};
-
-    try {
-      // Upload cover image if exists
+    if (
+      !existingArticle.coverImage.includes(files.coverImage[0].originalname)
+    ) {
       if (files.coverImage?.[0]) {
+        await del(existingArticle.coverImage, {
+          token: environment.BLOB_READ_WRITE_TOKEN,
+        });
+        existingArticle.coverImage = '';
         const coverFile = files.coverImage[0];
         const coverBlob = await put(
-          `Articles/${id}/cover-image-${Date.now()}${extname(coverFile.originalname)}`,
+          `Articles/temp-${Date.now()}/cover-image${extname(coverFile.originalname)}`,
           coverFile.buffer,
           {
             token: environment.BLOB_READ_WRITE_TOKEN,
@@ -169,13 +169,20 @@ export class ArticleService {
           },
         );
         fileUrls.coverImage = coverBlob.url;
+      } else {
+        throw new NotFoundException('Cover image not found');
       }
+    }
 
-      // Upload thumbnail if exists
+    if (!existingArticle.thumbnail.includes(files.thumbnail[0].originalname)) {
       if (files.thumbnail?.[0]) {
+        await del(existingArticle.thumbnail, {
+          token: environment.BLOB_READ_WRITE_TOKEN,
+        });
+        existingArticle.thumbnail = '';
         const thumbnailFile = files.thumbnail[0];
         const thumbnailBlob = await put(
-          `Articles/${id}/thumbnail-${Date.now()}${extname(thumbnailFile.originalname)}`,
+          `Articles/temp-${Date.now()}/thumbnail${extname(thumbnailFile.originalname)}`,
           thumbnailFile.buffer,
           {
             token: environment.BLOB_READ_WRITE_TOKEN,
@@ -184,70 +191,52 @@ export class ArticleService {
           },
         );
         fileUrls.thumbnail = thumbnailBlob.url;
+      } else {
+        throw new NotFoundException('Thumbnail image not found');
       }
-
-      // Upload additional images if exist
-      if (files.images?.length) {
-        // Parse image metadata
-        let imageMetadata = [];
-        if (article.images) {
-          try {
-            imageMetadata = article.images;
-          } catch (e) {
-            console.error('Failed to parse image metadata');
-          }
-        }
-
-        // If updating with new images, replace the existing ones
-        const uploadedImages = await Promise.all(
-          files.images.map(async (file, index) => {
-            const blob = await put(
-              `Articles/${id}/images/${Date.now()}-${index}${extname(file.originalname)}`,
-              file.buffer,
-              {
-                token: environment.BLOB_READ_WRITE_TOKEN,
-                contentType: file.mimetype,
-                access: 'public',
-              },
-            );
-
-            return {
-              url: blob.url,
-              description: imageMetadata[index]?.description || '',
-            };
-          }),
-        );
-
-        fileUrls.images = uploadedImages;
-      }
-
-      // Format tags if provided
-      if (updateData.tags && typeof updateData.tags === 'string') {
-        updateData.tags = (<string>updateData.tags)
-          .split(',')
-          .map((tag) => tag.trim());
-      }
-
-      // Merge updates
-      const finalUpdateData = {
-        ...updateData,
-        ...fileUrls,
-      };
-
-      // Update article in database and return updated article
-      return this.articleModel
-        .findByIdAndUpdate(id, finalUpdateData, { new: true })
-        .populate('author')
-        .exec();
-    } catch (error) {
-      console.error('Error updating article:', error);
-      throw error;
     }
+
+    if (files.images?.length) {
+      // Parse image metadata
+      let imageMetadata = [];
+      if (article.images) {
+        try {
+          imageMetadata = article.images;
+        } catch (e) {
+          console.error('Failed to parse image metadata');
+        }
+      }
+
+      fileUrls.images = await Promise.all(
+        files.images.map(async (file, index) => {
+          const blob = await put(
+            `Articles/temp-${Date.now()}/images/${index}${extname(file.originalname)}`,
+            file.buffer,
+            {
+              token: environment.BLOB_READ_WRITE_TOKEN,
+              contentType: file.mimetype,
+              access: 'public',
+            },
+          );
+
+          return {
+            url: blob.url,
+            description: imageMetadata[index]?.description || '',
+          };
+        }),
+      );
+    }
+
+    return this.updateArticle(id, updateData, fileUrls);
   }
 
-  updateArticle(id: string, article: UpdateArticleDto): Promise<Article> {
+  updateArticle(
+    id: string,
+    article: UpdateArticleDto,
+    fileUrls: string[],
+  ): Promise<Article> {
     return this.articleModel
-      .findByIdAndUpdate(id, article, { new: true })
+      .findByIdAndUpdate(id, { ...article, ...fileUrls }, { new: true })
       .exec();
   }
 
