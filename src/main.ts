@@ -1,16 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as fs from "node:fs";
+import * as fs from 'node:fs';
 
 async function bootstrap() {
-   const httpsOptions = {
-     key: fs.readFileSync('/etc/letsencrypt/live/api.tigan.dev/privkey.pem'),
-     cert: fs.readFileSync('/etc/letsencrypt/live/api.tigan.dev/cert.pem'),
-   };
+  const httpsOptions = {
+    key: fs.readFileSync('/etc/letsencrypt/live/api.tigan.dev/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/api.tigan.dev/cert.pem'),
+  };
 
   const app = await NestFactory.create(AppModule, {
-     httpsOptions,
+    httpsOptions,
   });
+
   app.use((req, res, next) => {
     const allowedOrigins = ['https://next.tigan.dev', 'http://localhost:4200'];
     const origin = req.headers.origin;
@@ -32,7 +33,7 @@ async function bootstrap() {
     next();
   });
 
-  await app.listen(443);
+  await app.listen(3000); // Change to port 3000
 }
 
 bootstrap();
